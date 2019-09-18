@@ -20,9 +20,19 @@ This course aims to teach the basics of the Python programming language. I know 
 And so much more. 
 
 # How to start:
-First off you will start by cloning this repository.
+First off you will start by cloning this repository. Open a terminal/powershell/cmd prompt and type the following commands in. You will need to hit enter after each command to run the command.
 
 ```
+cd Desktop
 git clone https://github.com/RedHoodJT1988/pythonwithjon.git
+cd pythonwithjon
+code .
+```
 
-This will clone my repository(repo) to your computer so you can follow along with everything that I do. 
+This will change your directory to the Desktop, you will then clone my repo to your computer, next you will change directory(cd) to the newly cloned repo pythonwithjon, and finally the `code .` opens the contents of the repo within Visual Studio Code.
+
+If you are using another text editor that you are more comfortable with then please replace the steps with opening the repo in your text editor. If you aren't comfortable with the command prompt/terminal don't worry you can click and drag your the repo folder on to VS Code. This is covered in the first few lecture vidoes. 
+
+I hope you enjoy the course and I look forward to seeing the awesome things you create once you are finished. 
+
+
