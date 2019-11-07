@@ -14,7 +14,7 @@ This course aims to teach the basics of the Python programming language. I know 
 >    2. Tuples
 >    3. Sets
 >    4. Dictionaries
-> * Game creation
+> * Game Development
 > * Web Development
 
 And so much more. 
