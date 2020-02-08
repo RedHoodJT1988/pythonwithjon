@@ -3,21 +3,37 @@ import items
 
 class Player:
     def __init__(self):
-        self.inventory = [
-            items.Handgun(),
-            items.Knife(),
-            'Cash(5)',
-            'medpack'
-        ]
+        self.inventory = [items.Rock(),
+                          items.Handgun(),
+                          'Gold(5)',
+                          'Medpack']
 
-    def print_invetory(self):
-        print("Inventory: ")
+        self.x = 1
+        self.y = 2
+
+    def move(self, coord_x, coord_y):
+        self.x += coord_x
+        self.y += coord_y
+    
+    def move_north(self):
+        self.move(coord_x=0, coord_y=-1)
+
+    def move_south(self):
+        self.move(coord_x=0, coord_y=1)
+
+    def move_east(self):
+        self.move(coord_x=1, coord_y=0)
+
+    def move_west(self):
+        self.move(coord_x=-1, coord_y=0)
+
+    def print_inventory(self):
+        print("Inventory:")
         for item in self.inventory:
-            printf("*" + str(item))
+            print('* ' + str(item))
         best_weapon = self.most_powerful_weapon()
         print("Your best weapon is your {}".format(best_weapon))
 
-    # Create a function to check the damage value of each item in the players inventory
     def most_powerful_weapon(self):
         max_damage = 0
         best_weapon = None
@@ -28,4 +44,21 @@ class Player:
                     max_damage = item.damage
             except AttributeError:
                 pass
-        print(best_weapon)
+
+        return best_weapon
+
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
+
+    def move_north(self):
+        self.move(dx=0, dy=-1)
+
+    def move_south(self):
+        self.move(dx=0, dy=1)
+
+    def move_east(self):
+        self.move(dx=1, dy=0)
+
+    def move_west(self):
+        self.move(dx=-1, dy=0)

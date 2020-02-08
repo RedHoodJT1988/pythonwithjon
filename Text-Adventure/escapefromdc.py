@@ -1,13 +1,9 @@
-# This program is a text-adventure game where your main goal is to Escape
-# @TODO finish fleshing out details of program
-# Author: Jonathan Reeves
-
 from player import Player
+import world
 
 
 def play():
-    print("Escape From DC!")
-    # Commands used to play the game
+    print("Escape from Cave Terror!")
     print('''Valid Directions: 
     n or N = North
     s or S = South
@@ -17,32 +13,26 @@ def play():
     m or M = Most Powerful Weapon in Inventory
     ''')
     player = Player()
-
     while True:
+        room = world.tile_at(player.x, player.y)
+        print(room.intro_text())
         action_input = get_player_command()
-        # Handle player commands
         if action_input in ['n', 'N']:
-            print("Go North!")
+            player.move_north()
         elif action_input in ['s', 'S']:
-            print("Go South!")
+            player.move_south()
         elif action_input in ['e', 'E']:
-            print("Go East!")
+            player.move_east()
         elif action_input in ['w', 'W']:
-            print("Go West!")
+            player.move_west()
         elif action_input in ['i', 'I']:
-            print("Inventory: ")
-            print(inventory)
-        elif action_input in ['l', 'L']:
-            player.print_invetory()
-        elif action_input in ['m', 'M']:
-            player.most_powerful_weapon()
-            # print(most_powerful_weapon(inventory))
+            player.print_inventory()
         else:
-            print("Invalid direction! Please type a valid direction.")
+            print("Invalid action!")
 
 
 def get_player_command():
-    return input("Input direction: ")
+    return input('Action: ')
 
 
 play()
