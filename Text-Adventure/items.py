@@ -36,3 +36,21 @@ class Handgun(Weapon):
         self.description = "A pistol. Needs bullets, but is good for defense and hunting."
         self.bullets = 0
         self.damage = 30
+
+class Consumable:
+    def __init__(self):
+        raise NotImplementedError("Do not create raw Consumable objects.")
+
+    def __str__(self):
+        return "{} (+ {} HP)".format(self.name, self.healing_value)
+
+class MedPack(Consumable):
+    def __init__(self):
+        self.name = "Medpack"
+        self.healing_value = 100
+
+class Apple(Consumable):
+    def __init__(self):
+        self.name = "Apple"
+        self.healing_value = 50
+
