@@ -14,6 +14,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 TEAL = (0, 128, 0)
+BLUE = (0, 0, 255)
 NAVYBLUE = (0, 0, 128)
 AQUA = (0, 255, 255)
 BGCOLOR = BLACK
@@ -88,3 +89,55 @@ def runGame():
             elif direction == RIGHT:
                 newHead = {'x': snakeCoords[HEAD]['x'] + 1, 'y': snakeCoords[HEAD]['y']}
             snakeCoords.insert(0, newHead)
+            DISPLAYSURF.fill(BGCOLOR)
+            drawGrid()
+            drawSnake(snakeCoords)
+            drawScore(len(snakeCoord) - 3)
+            pygame.display.update()
+            FPSCLOCK.tick(FPS)
+
+def drawPressKeyMsg():
+    pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
+    DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
+
+def checkForKeyPress():
+    if len(pygame.event.get(QUIT))>0:
+        terminate()
+
+    keyUpEvents = pygame.event.get(KEYUP)
+    if len(keyUpEvents) == 0:
+        return None
+    if keyUpEvents[0].key == K_ESCAPE:
+        terminate()
+    return keyUpEvents[0].key
+
+def showStartScreen():
+    titleFont = pygame.font.Font('3Dventure.tff', 100)
+    titleSurf1 = titleFont.render('Slither!', True, AQUA, TEAL)
+    titleSurf2 = titleFont.render('Slither!', True, BLUE, NAVYBLUE)
+
+    degrees1 = 0
+    degrees2 = 0
+    while True:
+        DISPLAYSURF.fill(BGCOLOR)
+        rotatedSurf1 = pygame.transform.rotate(titleSurf1, degrees1)
+        rotatedRect1 = rotatedSurf1.get_rect()
+        rotatedRect1.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        DISPLAYSURF.blit(rotatedSurf1, rotatedRect1)
+
+        rotatedSurf2 = pygame.transform.rotate(titleSurf1, degrees1)
+        rotatedRect2 = rotatedSurf1.get_rect()
+        rotatedRect2.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
+        DISPLAYSURF.blit(rotatedSurf2, rotatedRect2)
+
+        drawPressKeyMsg()
+
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+        degrees1 += 4
+        degrees2 += 8
