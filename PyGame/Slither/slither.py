@@ -1,22 +1,22 @@
 import random, pygame, sys
 from pygame.locals import *
 
-FPS = 30
-WINDOWWIDTH = 800
-WINDOWHEIGHT = 640
+FPS = 15
+WINDOWWIDTH = 640
+WINDOWHEIGHT = 480
 CELLSIZE = 20
-assert WINDOWWIDTH % CELLSIZE == 0
-assert WINDOWHEIGHT % CELLSIZE == 0
-CELLWIDTH = int(WINDOWWIDTH/CELLSIZE)
-CELLHEIGHT = int(WINDOWHEIGHT/CELLSIZE)
+assert WINDOWWIDTH % CELLSIZE == 0, "Window width must be a multiple of cell size."
+assert WINDOWHEIGHT % CELLSIZE == 0, "Window height must be a multiple of cell size."
+CELLWIDTH = int(WINDOWWIDTH / CELLSIZE)
+CELLHEIGHT = int(WINDOWHEIGHT / CELLSIZE)
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-TEAL = (0, 128, 0)
-BLUE = (0, 0, 255)
-NAVYBLUE = (0, 0, 128)
-AQUA = (0, 255, 255)
+#             R    G    B
+WHITE     =  (255, 255, 255)
+BLACK     =  (  0,   0,   0)
+RED       =  (255,   0,   0)
+AQUA      =  (  0, 255,   255)
+TEAL      =  (  0, 128,   128)
+NAVYBLUE  = (  0,   0,  128)
 BGCOLOR = BLACK
 
 UP = 'up'
@@ -24,7 +24,7 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-HEAD = 0
+HEAD = 0 # syntactic sugar: index of the snake's head
 
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT
@@ -32,26 +32,29 @@ def main():
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-    BASICFONT = pygame.font.Font('3Dventure.ttf')
+    BASICFONT = pygame.font.Font('3Dventure.ttf', 18)
     pygame.display.set_caption('Slither')
 
     showStartScreen()
-    whil True:
-    runGame()
-    showGameOverScreen()
+    while True:
+        runGame()
+        showGameOverScreen()
+
 
 def runGame():
+    # Set a random start point.
     startx = random.randint(5, CELLWIDTH - 6)
     starty = random.randint(5, CELLHEIGHT - 6)
-    snakeCoords = [{'x': startx, 'y': starty}],
-                  {'x': startx - 1, 'y': starty}
-                  {'x': start - 2, 'y':starty}
+    snakeCoords = [{'x': startx,     'y': starty},
+                  {'x': startx - 1, 'y': starty},
+                  {'x': startx - 2, 'y': starty}]
     direction = RIGHT
 
+    # Start the apple in a random place.
     apple = getRandomLocation()
 
-    while True:
-        for event in pygame.event.get():
+    while True: # main game loop
+        for event in pygame.event.get(): # event handling loop
             if event.type == QUIT:
                 terminate()
             elif event.type == KEYDOWN:
@@ -66,44 +69,47 @@ def runGame():
                 elif event.key == K_ESCAPE:
                     terminate()
 
-            # Collision detection for end of game
-            if snakeCoords[HEAD]['x'] == -1 or snakeCoords[HEAD]['x'] == CELLWIDTH or snakeCoords[HEAD]['y'] == -1 or snakeCoords[HEAD]['y'] == CELLHEIGHT:
-                return
-            for snakeBody in snakeCoords[1]:
-                if snakeBody['x'] == snakeCoords[HEAD]['x'] and snakeBody['y'] == snakeCoords[HEAD]['y']:
-                    return
+        # check if the snake has hit itself or the edge
+        if snakeCoords[HEAD]['x'] == -1 or snakeCoords[HEAD]['x'] == CELLWIDTH or snakeCoords[HEAD]['y'] == -1 or snakeCoords[HEAD]['y'] == CELLHEIGHT:
+            return # game over
+        for snakeBody in snakeCoords[1:]:
+            if snakeBody['x'] == snakeCoords[HEAD]['x'] and snakeBody['y'] == snakeCoords[HEAD]['y']:
+                return # game over
 
-            # Collision detection for apple pickup
-            if snakeCoords[HEAD]['x'] == apple['x'] and snakeCoords[HEAD]['y'] == apple['y']:
-                apple = getRandomLocation()
-            else:
-                del snakeCoords[-1]
+        # check if snake has eaten an apply
+        if snakeCoords[HEAD]['x'] == apple['x'] and snakeCoords[HEAD]['y'] == apple['y']:
+            # don't remove snake's tail segment
+            apple = getRandomLocation() # set a new apple somewhere
+        else:
+            del snakeCoords[-1] # remove snake's tail segment
 
-            # Movement of the snake
-            if direction == UP:
-                newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] - 1}
-            elif direction == DOWN:
-                newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] + 1}
-            elif direction == LEFT:
-                newHead = {'x': snakeCoords[HEAD]['x'] - 1, 'y': snakeCoords[HEAD]['y']}
-            elif direction == RIGHT:
-                newHead = {'x': snakeCoords[HEAD]['x'] + 1, 'y': snakeCoords[HEAD]['y']}
-            snakeCoords.insert(0, newHead)
-            DISPLAYSURF.fill(BGCOLOR)
-            drawGrid()
-            drawSnake(snakeCoords)
-            drawScore(len(snakeCoord) - 3)
-            pygame.display.update()
-            FPSCLOCK.tick(FPS)
+        # move the snake by adding a segment in the direction it is moving
+        if direction == UP:
+            newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] - 1}
+        elif direction == DOWN:
+            newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] + 1}
+        elif direction == LEFT:
+            newHead = {'x': snakeCoords[HEAD]['x'] - 1, 'y': snakeCoords[HEAD]['y']}
+        elif direction == RIGHT:
+            newHead = {'x': snakeCoords[HEAD]['x'] + 1, 'y': snakeCoords[HEAD]['y']}
+        snakeCoords.insert(0, newHead)
+        DISPLAYSURF.fill(BGCOLOR)
+        drawGrid()
+        drawsnake(snakeCoords)
+        drawApple(apple)
+        drawScore(len(snakeCoords) - 3)
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render('Press a key to play', True, WHITE)
+    pressKeySurf = BASICFONT.render('Press a key to play.', True, NAVYBLUE)
     pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
     DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
 
+
 def checkForKeyPress():
-    if len(pygame.event.get(QUIT))>0:
+    if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
     keyUpEvents = pygame.event.get(KEYUP)
@@ -113,10 +119,11 @@ def checkForKeyPress():
         terminate()
     return keyUpEvents[0].key
 
+
 def showStartScreen():
-    titleFont = pygame.font.Font('3Dventure.tff', 100)
+    titleFont = pygame.font.Font('3Dventure.ttf', 100)
     titleSurf1 = titleFont.render('Slither!', True, AQUA, TEAL)
-    titleSurf2 = titleFont.render('Slither!', True, BLUE, NAVYBLUE)
+    titleSurf2 = titleFont.render('Slither!', True, AQUA)
 
     degrees1 = 0
     degrees2 = 0
@@ -127,17 +134,82 @@ def showStartScreen():
         rotatedRect1.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         DISPLAYSURF.blit(rotatedSurf1, rotatedRect1)
 
-        rotatedSurf2 = pygame.transform.rotate(titleSurf1, degrees1)
-        rotatedRect2 = rotatedSurf1.get_rect()
+        rotatedSurf2 = pygame.transform.rotate(titleSurf2, degrees2)
+        rotatedRect2 = rotatedSurf2.get_rect()
         rotatedRect2.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         DISPLAYSURF.blit(rotatedSurf2, rotatedRect2)
 
         drawPressKeyMsg()
 
         if checkForKeyPress():
-            pygame.event.get()
+            pygame.event.get() # clear event queue
             return
         pygame.display.update()
         FPSCLOCK.tick(FPS)
-        degrees1 += 4
-        degrees2 += 8
+        degrees1 += 3 # rotate by 3 degrees each frame
+        degrees2 += 7 # rotate by 7 degrees each frame
+
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def getRandomLocation():
+    return {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
+
+
+def showGameOverScreen():
+    gameOverFont = pygame.font.Font('3Dventure.ttf', 150)
+    gameSurf = gameOverFont.render('Game', True, WHITE)
+    overSurf = gameOverFont.render('Over', True, WHITE)
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+    gameRect.midtop = (WINDOWWIDTH / 2, 10)
+    overRect.midtop = (WINDOWWIDTH / 2, gameRect.height + 10 + 25)
+
+    DISPLAYSURF.blit(gameSurf, gameRect)
+    DISPLAYSURF.blit(overSurf, overRect)
+    drawPressKeyMsg()
+    pygame.display.update()
+    pygame.time.wait(500)
+    checkForKeyPress() # clear out any key presses in the event queue
+
+    while True:
+        if checkForKeyPress():
+            pygame.event.get() # clear event queue
+            return
+
+def drawScore(score):
+    scoreSurf = BASICFONT.render('Score: %s' % (score), True, WHITE)
+    scoreRect = scoreSurf.get_rect()
+    scoreRect.topleft = (WINDOWWIDTH - 120, 10)
+    DISPLAYSURF.blit(scoreSurf, scoreRect)
+
+
+def drawsnake(snakeCoords):
+    for coord in snakeCoords:
+        x = coord['x'] * CELLSIZE
+        y = coord['y'] * CELLSIZE
+        snakeSegmentRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+        pygame.draw.rect(DISPLAYSURF, AQUA, snakeSegmentRect)
+        snakeInnerSegmentRect = pygame.Rect(x + 4, y + 4, CELLSIZE - 8, CELLSIZE - 8)
+        pygame.draw.rect(DISPLAYSURF, TEAL, snakeInnerSegmentRect)
+
+
+def drawApple(coord):
+    x = coord['x'] * CELLSIZE
+    y = coord['y'] * CELLSIZE
+    appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, RED, appleRect)
+
+
+def drawGrid():
+    for x in range(0, WINDOWWIDTH, CELLSIZE): # draw vertical lines
+        pygame.draw.line(DISPLAYSURF, NAVYBLUE, (x, 0), (x, WINDOWHEIGHT))
+    for y in range(0, WINDOWHEIGHT, CELLSIZE): # draw horizontal lines
+        pygame.draw.line(DISPLAYSURF, NAVYBLUE, (0, y), (WINDOWWIDTH, y))
+
+
+if __name__ == '__main__':
+    main()
